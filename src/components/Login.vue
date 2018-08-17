@@ -2,7 +2,7 @@
   <div class="container container-table">
     <!-- Errors -->
     <!-- <div v-if=response class="text-red"><p>{{response}}</p></div> -->
-
+    <iframe id="my_iframe" style="display:none;"></iframe>
     <!-- login Button -->
     <a id="signin-button" v-on:click="signIn">
       <i class="fa fa-google-plus-official fa-3x"></i>
@@ -16,6 +16,14 @@
       <i class="fa fa-google-plus-official fa-3x"></i>
       Sign out with Google
     </a>
+    <a id="signin-button" v-on:click="nextPage">
+      <i class="fa fa-google-plus-official fa-3x"></i>
+      Next
+    </a>
+    <a id="signin-button" v-on:click="goParent">
+      <i class="fa fa-google-plus-official fa-3x"></i>
+      goParent
+    </a>
     <table v-if=listFiles>
       <tr>
         <td>id</td>
@@ -24,8 +32,8 @@
         <td></td>
       </tr>
       <tr v-for="(item, index) in listFiles" :key="index">
-        <td><a href="#" v-on:click="checkType(item.id, item.mimeType, item.downloadUrl)">{{item.id}}</a></td>
-        <td>{{item.name}}</td>
+        <td><img v-bind:src="item.iconLink"><a href="#" v-on:click="checkType(item.id, item.mimeType, item.downloadUrl)">{{item.id}}</a></td>
+        <td>{{item.title}}</td>
         <td>{{item.mimeType}}</td>
         <td><img v-if="item.mimeType === 'image/jpeg'" width="100" v-bind:src="item.thumbnailLink"></td>
       </tr>
@@ -45,28 +53,64 @@ export default {
       access_token: '',
       listFiles: '',
       urlDrive: 'https://content.googleapis.com/drive/v2/files/',
-      urlDownload: ''
+      urlDownload: '',
+      urlNext: ''
     }
   },
   methods: {
     getDrive: function (id) {
-      if (!id) {
-        id = ''
-      }
       this.access_token = localStorage.getItem('access_token')
-      this.$http.get(this.urlDrive + id + '?access_token=' + this.access_token).then(res => {
+      if (!id) {
+        if (localStorage.getItem('currentID')) {
+          id = localStorage.getItem('currentID')
+        } else {
+          id = 'root'
+        }
+      } else {
+        this.$http.get(this.urlDrive + id + '?fields=title,%20parents(id)&access_token=' + this.access_token).then(res => {
+          localStorage.setItem('parentID', res.body.parents[0].id)
+          console.log(res.body)
+        }, res => {
+          console.log('err: ', res)
+        })
+      }
+      localStorage.setItem('currentID', id)
+      var params = [
+        {'orderBy': 'folder'},
+        {'maxResults': 100},
+        {'q': '\'' + id + '\' in parents and trashed=false'},
+        {'fields': 'nextPageToken, items(id, title, mimeType, thumbnailLink, downloadUrl, iconLink)'}
+      ]
+      params = params.map(function (key) {
+        return Object.keys(key).concat(Object.values(key)).join('=')
+      })
+      var uri = encodeURI(params.join('&'))
+      this.$http.get(this.urlDrive + '?' + uri + '&access_token=' + this.access_token).then(res => {
         console.log('data: ', res.body)
         this.listFiles = res.body.items
+        this.urlNext = res.body.nextLink
       }, res => {
         console.log('err: ', res)
       })
+    },
+    goParent: function () {
+      this.getDrive(localStorage.getItem('parentID'))
     },
     checkType: function (id, type, downloadUrl) {
       if (type === 'application/vnd.google-apps.folder') {
         this.getDrive(id)
       } else if (type === 'image/jpeg') {
-        location.pathname = downloadUrl + '&access_token=' + this.access_token
+        document.getElementById('my_iframe').src = downloadUrl + '&access_token=' + this.access_token
       }
+    },
+    nextPage: function () {
+      this.$http.get(this.urlNext + '&access_token=' + this.access_token).then(res => {
+        console.log('data: ', res.body)
+        this.listFiles = res.body.items
+        // this.urlNext = res.body.nextLink
+      }, res => {
+        console.log('err: ', res)
+      })
     },
     signIn: function () {
       // Just add in this line
