@@ -1,12 +1,13 @@
 <template>
-  <router-view></router-view>
+  <div>album</div>
 </template>
-
 <script>
 export default {
-  name: 'app'
+  name: 'album'
 }
 </script>
-
 <style>
+
 </style>
+
+

@@ -22,6 +22,46 @@ Vue.use(VueResource)
 
 Vue.config.productionTip = false
 
+/* ===========================================
+              GLOBAL GUARDS
+ =========================================== */
+
+// GLobal BEFORE hooks:
+router.beforeEach((to, from, next) => {
+  console.log('Global -- beforeEach - fired')
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+    if (!localStorage.getItem('access_token')) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      next()
+    }
+  } else {
+    next() // make sure to always call next()!
+  }
+})
+
+// Global beforeResolve
+router.beforeResolve((to, from, next) => {
+  console.log('Global -- beforeResolve - fired.')
+  next()
+})
+
+// GLobal AFTER hooks:
+router.afterEach((to, from) => {
+  // This fires after each route is entered.
+  console.log(`Global -- afterEach - Just moved from '${from.path}' to '${to.path}'`)
+})
+
+// Register an Error Handler:
+router.onError(err => {
+  console.error('Handling this error', err.message)
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

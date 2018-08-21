@@ -1,12 +1,12 @@
 <template>
-  <router-view></router-view>
+  <div>not found</div>
 </template>
-
 <script>
 export default {
-  name: 'app'
+  name: 'page-not-found'
 }
 </script>
-
 <style>
+
 </style>
+

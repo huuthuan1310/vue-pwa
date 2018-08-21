@@ -38,11 +38,13 @@
         <td><img v-if="item.mimeType === 'image/jpeg'" width="100" v-bind:src="item.thumbnailLink"></td>
       </tr>
     </table>
+    <div v-on:click="checkauthen">check authen</div>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
+import router from '../router'
 export default {
   name: 'login',
   data: (router) => {
@@ -58,6 +60,10 @@ export default {
     }
   },
   methods: {
+    checkauthen: function () {
+      this.access_token = localStorage.getItem('access_token')
+      this.$http.get('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + this.access_token).then(res => console.log(res))
+    },
     getDrive: function (id) {
       this.access_token = localStorage.getItem('access_token')
       if (!id) {
@@ -129,7 +135,7 @@ export default {
       this.toggleLoading()
       this.resetResponse()
       localStorage.setItem('access_token', authorizationCode.Zi.access_token)
-      console.log(authorizationCode)
+      router.push(this.$route.query.redirect)
     },
     onSignInError: function (error) {
       this.response = 'Failed to sign-in'
@@ -141,6 +147,30 @@ export default {
     resetResponse: function () {
       this.response = ''
     }
+  },
+  beforeRouteEnter (to, from, next) {
+    console.log('Enter component login')
+    // called before the route that renders this component is confirmed.
+    // does NOT have access to `this` component instance,
+    // because it has not been created yet when this guard is called!
+    next()
+  },
+  beforeRouteUpdate (to, from, next) {
+    // called when the route that renders this component has changed,
+    // but this component is reused in the new route.
+    // For example, for a route with dynamic params `/foo/:id`, when we
+    // navigate between `/foo/1` and `/foo/2`, the same `Foo` component instance
+    // will be reused, and this hook will be called when that happens.
+    // has access to `this` component instance.
+    console.log('update component login')
+    next()
+  },
+  beforeRouteLeave (to, from, next) {
+    // called when the route that renders this component is about to
+    // be navigated away from.
+    // has access to `this` component instance.
+    console.log('Leave')
+    next()
   }
 }
 </script>
