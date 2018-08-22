@@ -24,21 +24,11 @@
       <i class="fa fa-google-plus-official fa-3x"></i>
       goParent
     </a>
-    <table v-if=listFiles>
-      <tr>
-        <td>id</td>
-        <td>name</td>
-        <td>type</td>
-        <td></td>
-      </tr>
-      <tr v-for="(item, index) in listFiles" :key="index">
-        <td><img v-bind:src="item.iconLink"><a href="#" v-on:click="checkType(item.id, item.mimeType, item.downloadUrl)">{{item.id}}</a></td>
-        <td>{{item.title}}</td>
-        <td>{{item.mimeType}}</td>
-        <td><img v-if="item.mimeType === 'image/jpeg'" width="100" v-bind:src="item.thumbnailLink"></td>
-      </tr>
-    </table>
+    <button type="button" class="btn btn-primary">Primary</button>
+
     <div v-on:click="checkauthen">check authen</div>
+
+    <vue-picture-swipe v-if=listFiles :options="{shareButtons: [{id:'download', label:'Download image', url:'{{raw_image_url}}', download:true}],}" :items="listFiles"></vue-picture-swipe>
   </div>
 </template>
 
@@ -85,7 +75,7 @@ export default {
         {'orderBy': 'folder'},
         {'maxResults': 100},
         {'q': '\'' + id + '\' in parents and trashed=false'},
-        {'fields': 'nextPageToken, items(id, title, mimeType, thumbnailLink, downloadUrl, iconLink)'}
+        {'fields': 'nextPageToken, items(id, title, mimeType, thumbnailLink, downloadUrl, iconLink, imageMediaMetadata(width, height), videoMediaMetadata)'}
       ]
       params = params.map(function (key) {
         return Object.keys(key).concat(Object.values(key)).join('=')
@@ -93,7 +83,22 @@ export default {
       var uri = encodeURI(params.join('&'))
       this.$http.get(this.urlDrive + '?' + uri + '&access_token=' + this.access_token).then(res => {
         console.log('data: ', res.body)
-        this.listFiles = res.body.items
+        this.listFiles = res.body.items.map((item) => {
+          var obj = {
+            id: item.id,
+            title: item.title,
+            mimeType: item.mimeType,
+            thumbnail: item.thumbnailLink,
+            src: item.downloadUrl + '&access_token=' + this.access_token,
+            w: item.imageMediaMetadata.width,
+            h: item.imageMediaMetadata.height,
+            iconLink: item.iconLink,
+            videoMediaMetadata: item.videoMediaMetadata
+          }
+          console.log(obj)
+          return obj
+        })
+        console.log(this.listFiles)
         this.urlNext = res.body.nextLink
       }, res => {
         console.log('err: ', res)

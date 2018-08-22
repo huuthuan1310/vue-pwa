@@ -6,6 +6,7 @@ import router from './router'
 import GoogleAuth from 'vue-google-oauth'
 import VueResource from 'vue-resource'
 import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm'
+import VuePictureSwipe from 'vue-picture-swipe'
 // Import the styles directly. (Or you could add them via script tags.)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -24,6 +25,7 @@ Vue.use(GoogleAuth, {
 })
 Vue.googleAuth().load()
 Vue.use(VueResource)
+Vue.component('vue-picture-swipe', VuePictureSwipe)
 
 Vue.config.productionTip = false
 

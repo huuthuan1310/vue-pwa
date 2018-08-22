@@ -18,6 +18,7 @@
     "bootstrap-vue": "^2.0.0-rc.11",
     "vue": "^2.5.2",
     "vue-google-oauth": "^1.0.5",
+    "vue-picture-swipe": "^0.4.0",
     "vue-resource": "^1.5.1",
     "vue-router": "^3.0.1"
   },
