@@ -1,6 +1,6 @@
 {
-  "name": "vue-pwa",
-  "short_name": "vue-pwa",
+  "name": "NHF APP",
+  "short_name": "NHF APP",
   "icons": [
     {
       "src": "/static/img/icons/android-chrome-192x192.png",

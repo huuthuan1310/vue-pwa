@@ -5,7 +5,12 @@ import App from './App'
 import router from './router'
 import GoogleAuth from 'vue-google-oauth'
 import VueResource from 'vue-resource'
+import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm'
+// Import the styles directly. (Or you could add them via script tags.)
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+Vue.use(BootstrapVue)
 Vue.use(GoogleAuth, {
   client_id: '402271985389-atpk31e9attb5s1vbs0u38dunn5uoah9.apps.googleusercontent.com',
   scope: 'https://www.googleapis.com/auth/drive ' +
