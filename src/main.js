@@ -7,6 +7,8 @@ import GoogleAuth from 'vue-google-oauth'
 import VueResource from 'vue-resource'
 import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm'
 import VuePictureSwipe from 'vue-picture-swipe'
+import VueAgile from 'vue-agile'
+
 // Import the styles directly. (Or you could add them via script tags.)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -25,9 +27,12 @@ Vue.use(GoogleAuth, {
 })
 Vue.googleAuth().load()
 Vue.use(VueResource)
+Vue.use(VueAgile)
 Vue.component('vue-picture-swipe', VuePictureSwipe)
 
 Vue.config.productionTip = false
+
+const axios = require('axios')
 
 /* ===========================================
               GLOBAL GUARDS
@@ -45,7 +50,14 @@ router.beforeEach((to, from, next) => {
         query: { redirect: to.fullPath }
       })
     } else {
-      next()
+      axios.get('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + localStorage.getItem('access_token')).then(function () {
+        next()
+      }).catch(function () {
+        next({
+          path: '/login',
+          query: { redirect: to.fullPath }
+        })
+      })
     }
   } else {
     next() // make sure to always call next()!

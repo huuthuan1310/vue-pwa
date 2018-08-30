@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 const Login = () => import('@/components/Login')
+const LoginV = () => import('@/components/LoginV')
 const Layout = () => import('@/components/Layout')
 const Home = () => import('@/components/Home')
 const Album = () => import('@/components/Album')
@@ -13,7 +14,6 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'layout',
       component: Layout,
       children: [
         {
@@ -35,6 +35,15 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: Login,
+      beforeEnter: (to, from, next) => {
+        console.log('Entering User')
+        next()
+      }
+    },
+    {
+      path: '/loginv',
+      name: 'loginv',
+      component: LoginV,
       beforeEnter: (to, from, next) => {
         console.log('Entering User')
         next()

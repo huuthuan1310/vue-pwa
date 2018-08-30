@@ -137,10 +137,12 @@ export default {
       })
     },
     onSignInSuccess: function (authorizationCode) {
-      this.toggleLoading()
-      this.resetResponse()
+      // this.toggleLoading()
+      // this.resetResponse()
       localStorage.setItem('access_token', authorizationCode.Zi.access_token)
-      router.push(this.$route.query.redirect)
+      if (this.$route.query.redirect) {
+        router.push(this.$route.query.redirect)
+      }
     },
     onSignInError: function (error) {
       this.response = 'Failed to sign-in'
