@@ -8,12 +8,14 @@ import VueResource from 'vue-resource'
 import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm'
 import VuePictureSwipe from 'vue-picture-swipe'
 import VueAgile from 'vue-agile'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fab } from '@fortawesome/free-brands-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 // Import the styles directly. (Or you could add them via script tags.)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-Vue.use(BootstrapVue)
 Vue.use(GoogleAuth, {
   client_id: '402271985389-atpk31e9attb5s1vbs0u38dunn5uoah9.apps.googleusercontent.com',
   scope: 'https://www.googleapis.com/auth/drive ' +
@@ -27,9 +29,11 @@ Vue.use(GoogleAuth, {
 })
 Vue.googleAuth().load()
 Vue.use(VueResource)
+library.add(fab)
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+Vue.use(BootstrapVue)
 Vue.use(VueAgile)
 Vue.component('vue-picture-swipe', VuePictureSwipe)
-
 Vue.config.productionTip = false
 
 const axios = require('axios')

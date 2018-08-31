@@ -1,9 +1,25 @@
 <template>
   <div id="loginPage">
-    {{agileLoad}}
-    <agile v-if="agileLoad" :options="agileOpt">
-      <div v-for="item in slideImages" :key="item.id" class="slide slide---1" :style="{'background-image':'url(https://docs.google.com/uc?id=' + item.id + ')'}"></div>
-    </agile>
+    <div v-if="!agileLoad" class="loading">Loading...</div>
+    <div v-if="agileLoad">
+      <agile v-if="agileLoad" :options="agileOpt">
+        <div v-for="item in slideImages" :key="item.id" class="slide" :style="{'background-image':'url(https://docs.google.com/uc?id=' + item.id + ')'}"></div>
+      </agile>
+      <div class="login--container">
+        <div class="login--form">
+          <div class="login--form--title">
+            <span>Welcome to</span>
+            <img src="https://www.opusbank.com/themes/opusbank/assets/images/merchant-banking/logos/nhf.png" alt="" width="70%">
+          </div>
+          <div class="login--form--btn google--btn" v-on:click="signIn">
+            <div class="google--btn--icon">
+              <font-awesome-icon :icon="['fab', 'google']"/>
+            </div>
+            <div class="google--btn--text">Sign in with Google</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -57,6 +73,7 @@ export default {
     },
     signIn: function () {
       // Just add in this line
+      this.agileLoad = false
       Vue.googleAuth().directAccess()
       Vue.googleAuth().signIn(this.onSignInSuccess, this.onSignInError)
     },
@@ -72,8 +89,11 @@ export default {
       // this.toggleLoading()
       // this.resetResponse()
       localStorage.setItem('access_token', authorizationCode.Zi.access_token)
+      this.agileLoad = true
       if (this.$route.query.redirect) {
         router.push(this.$route.query.redirect)
+      } else {
+        router.push({name: 'home'})
       }
     },
     onSignInError: function (error) {
@@ -117,32 +137,63 @@ export default {
 }
 </script>
 <style lang="scss">
-.slide {
+  .slide {
     background: {
       position: center;
       size: cover;
     }
     height: 100vh;
-    &:before {
-        background-color: rgba(#000, .2);
-        content: '';
-        height: 100%;
-        left: 0;
-        position: absolute;
-        top: 0;
-        width: 100%;
+  }
+  .login {
+    &--container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #0000007a;
+      color: white;
     }
-
-    &--1 {
-      background-image: url(https://lukaszflorczak.github.io/vue-agile/static/img/bg-07.3a19e81.jpg);
-    }
-
-    &--2 {
-      background-image: url(https://lukaszflorczak.github.io/vue-agile/static/img/bg-08.c43e689.jpg);
-    }
-
-    &--3 {
-      background-image: url(https://lukaszflorczak.github.io/vue-agile/static/img/bg-09.e55cb0a.jpg);
+    &--form {
+      text-align: center;
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+      &--title {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 40px;
+        max-width: 70%;
+        text-shadow: 0px 3px 15px rgba(150, 150, 150, 0.5);
+      }
+      &--btn {
+        &.google--btn {
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          padding: 10px 25px;
+          background-color: red;
+          cursor: pointer;
+          border-radius: 100px;
+          max-width: 60%;
+          * {
+            margin-right: 10px;
+            &:last-child {
+              margin: 0;
+            }
+            &.google--btn--text {
+              font-weight: 500;
+            }
+          }
+        }
+      }
     }
   }
 </style>
